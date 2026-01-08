@@ -392,10 +392,10 @@ export class TalentInviter {
 
       let successCount = 0;
       let failCount = 0;
-      let page = 1;
+      let currentPage = 1;
 
       while (true) {
-        logger.info(`========== 开始处理第 ${page} 页 ==========`);
+        logger.info(`========== 开始处理第 ${currentPage} 页 ==========`);
 
         const talents = await this.getTalentList();
         if (talents.length === 0) {
@@ -434,7 +434,7 @@ export class TalentInviter {
           }
         }
 
-        logger.info(`第 ${page} 页处理完成: 成功 ${successCount}, 失败 ${failCount}`);
+        logger.info(`第 ${currentPage} 页处理完成: 成功 ${successCount}, 失败 ${failCount}`);
 
         // 翻页
         const hasNextPage = await this.goToNextPage();
@@ -443,7 +443,7 @@ export class TalentInviter {
           break;
         }
 
-        page++;
+        currentPage++;
 
         // 检查总超时
         this.checkTotalTimeout();
@@ -514,7 +514,7 @@ export class TalentInviter {
           }
         }
 
-        logger.info(`第 ${page} 页处理完成: 成功 ${successCount}, 失败 ${failCount}`);
+        logger.info(`第 ${currentPage} 页处理完成: 成功 ${successCount}, 失败 ${failCount}`);
 
         // 翻页
         const hasNextPage = await this.goToNextPage();
@@ -523,7 +523,7 @@ export class TalentInviter {
           break;
         }
 
-        page++;
+        currentPage++;
 
         // 检查总超时
         this.checkTotalTimeout();
