@@ -6,6 +6,7 @@
 
 import puppeteer from 'puppeteer';
 import http from 'http';
+import fs from 'fs';
 import { logger, randomDelay } from './utils.js';
 
 /**
@@ -103,7 +104,7 @@ async function main() {
     // 获取页面HTML
     const html = await page.content();
     const htmlPath = './debug-page.html';
-    require('fs').writeFileSync(htmlPath, html);
+    fs.writeFileSync(htmlPath, html);
     logger.info(`已保存页面HTML: ${htmlPath}`);
 
     // 查找可能的达人元素
