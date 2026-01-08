@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * 使用http模块获取WebSocket URL并连接到Edge
+ * 使用IPv4地址连接到Edge（解决IPv6问题）
  */
 
 import puppeteer from 'puppeteer';
@@ -11,12 +11,18 @@ import { logger } from './utils.js';
 import config from './config.js';
 
 /**
- * 使用http模块获取WebSocket Debugger URL
+ * 使用http模块获取WebSocket Debugger URL（强制IPv4）
  */
 function getWebSocketDebuggerUrl(debugPort = 9222) {
   return new Promise((resolve, reject) => {
-    // 使用IPv4地址127.0.0.1，而不是localhost（可能解析为IPv6 ::1）
-    http.get(`http://127.0.0.1:${debugPort}/json/version`, (res) => {
+    const options = {
+      hostname: '127.0.0.1',  // 强制使用IPv4
+      port: debugPort,
+      path: '/json/version',
+      method: 'GET'
+    };
+
+    const req = http.request(options, (res) => {
       let data = '';
 
       res.on('data', (chunk) => {
@@ -26,14 +32,21 @@ function getWebSocketDebuggerUrl(debugPort = 9222) {
       res.on('end', () => {
         try {
           const json = JSON.parse(data);
-          resolve(json.webSocketDebuggerUrl);
+          // 将WebSocket URL中的localhost替换为127.0.0.1
+          let wsUrl = json.webSocketDebuggerUrl;
+          wsUrl = wsUrl.replace(/localhost/g, '127.0.0.1');
+          resolve(wsUrl);
         } catch (error) {
           reject(new Error(`解析JSON失败: ${error.message}`));
         }
       });
-    }).on('error', (error) => {
+    });
+
+    req.on('error', (error) => {
       reject(new Error(`获取WebSocket URL失败: ${error.message}`));
     });
+
+    req.end();
   });
 }
 
@@ -42,10 +55,10 @@ async function main() {
 
   if (args.length === 0) {
     console.log(`
-用法: node connect-with-http.js "达人广场URL"
+用法: node connect-ipv4.js "达人广场URL"
 
 示例:
-  node connect-with-http.js "https://store.weixin.qq.com/shop/findersquare/find"
+  node connect-ipv4.js "https://store.weixin.qq.com/shop/findersquare/find"
     `);
     process.exit(0);
   }
@@ -54,11 +67,11 @@ async function main() {
 
   try {
     logger.info('========================================');
-    logger.info('通过HTTP模块连接到Edge浏览器...');
+    logger.info('通过IPv4连接到Edge浏览器...');
     logger.info('========================================\n');
 
     // 获取WebSocket Debugger URL
-    logger.info('正在获取WebSocket Debugger URL...');
+    logger.info('正在获取WebSocket Debugger URL（IPv4）...');
     const wsUrl = await getWebSocketDebuggerUrl(9222);
     logger.info(`✓ WebSocket URL: ${wsUrl}\n`);
 

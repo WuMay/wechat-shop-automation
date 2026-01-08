@@ -9,7 +9,8 @@ import { logger } from './utils.js';
 export class EdgeConnector {
   constructor(options = {}) {
     this.browser = null;
-    this.debugUrl = options.debugUrl || 'http://localhost:9222';
+    // 默认使用IPv4地址避免IPv6问题
+    this.debugUrl = options.debugUrl || 'http://127.0.0.1:9222';
     this.options = options;
   }
 
