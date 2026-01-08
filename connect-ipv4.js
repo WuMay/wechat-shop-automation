@@ -7,7 +7,7 @@
 import puppeteer from 'puppeteer';
 import http from 'http';
 import { TalentInviter } from './inviter.js';
-import { logger } from './utils.js';
+import { logger, randomDelay } from './utils.js';
 import config from './config.js';
 
 /**
@@ -104,6 +104,14 @@ async function main() {
 
     logger.info(`正在导航到: ${startUrl}`);
     await page.goto(startUrl, { waitUntil: 'networkidle2' });
+
+    // 等待页面完全加载
+    logger.info('等待页面加载完成...');
+    await randomDelay(3000, 5000);
+
+    // 添加调试信息
+    logger.info('当前页面URL:', page.url());
+    logger.info('当前页面标题:', await page.title());
 
     logger.info('\n========================================');
     logger.info('开始自动化操作...');
