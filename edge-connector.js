@@ -20,11 +20,23 @@ export class EdgeConnector {
     try {
       logger.info(`尝试连接到: ${this.debugUrl}`);
 
-      // 使用puppeteer连接到现有的浏览器实例
-      this.browser = await puppeteer.connect({
+      // 尝试多种连接方式
+      let connectionOptions = {
         browserURL: this.debugUrl,
-        defaultViewport: null // 使用浏览器的默认视口
-      });
+        defaultViewport: null
+      };
+
+      // 如果提供了webSocketDebuggerUrl，使用它
+      if (this.options.webSocketDebuggerUrl) {
+        connectionOptions = {
+          browserWSEndpoint: this.options.webSocketDebuggerUrl,
+          defaultViewport: null
+        };
+        logger.info(`使用WebSocket连接: ${this.options.webSocketDebuggerUrl}`);
+      }
+
+      // 使用puppeteer连接到现有的浏览器实例
+      this.browser = await puppeteer.connect(connectionOptions);
 
       // 验证连接
       const version = await this.browser.version();
@@ -37,6 +49,12 @@ export class EdgeConnector {
       return this.browser;
 
     } catch (error) {
+      // 提供更详细的错误信息
+      console.error('\n连接失败详细错误:');
+      console.error(error.message);
+      console.error('\n错误堆栈:');
+      console.error(error.stack);
+
       throw new Error(`连接Edge失败: ${error.message}\n请确保Edge以调试模式启动: msedge --remote-debugging-port=9222`);
     }
   }
