@@ -1,0 +1,25 @@
+# 依赖
+node_modules/
+
+# 用户数据（包含登录信息和cookie）
+user-data/
+
+# 日志文件
+*.log
+
+# 已邀约达人记录（可选，如果你想保留的话）
+# invited-talents.json
+
+# 环境变量（包含敏感信息）
+.env
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
