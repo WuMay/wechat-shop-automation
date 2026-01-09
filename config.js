@@ -25,24 +25,33 @@ export const config = {
 
   // 业务配置
   business: {
-    // 达人广场页面选择器（需要根据实际情况修改）
+    // 达人广场页面选择器（根据实际页面结构更新）
     selectors: {
-      // 达人列表项
-      talentItem: '.talent-item, [class*="talent"], [class*="达人"]',
-      // 详情按钮
-      detailButton: '.detail-btn, [class*="detail"], [class*="详情"]',
-      // 邀请带货按钮
-      inviteButton: '.invite-btn, [class*="invite"], [class*="邀请"]',
-      // 添加上次邀约商品
-      addProductButton: '.add-product, [class*="add"], [class*="添加"]',
-      // 确认按钮
-      confirmButton: '.confirm-btn, [class*="confirm"], [class*="确认"]',
+      // 达人列表项（表格的每一行）
+      talentItem: '.weui-desktop-table__core-table tbody tr',
+      // 详情按钮（右侧文本）
+      detailButton: '.w-full.text-right',
+      // 邀请带货按钮（主按钮，包含文本"邀请带货"）
+      inviteButton: 'button.weui-desktop-btn.weui-desktop-btn_primary',
+      // 添加上次邀约商品链接
+      addProductButton: 'a[href="javascript:void(0)"]',
+      // 确认按钮（多个地方使用）
+      confirmButton: 'button.weui-desktop-btn.weui-desktop-btn_primary',
       // 发送邀约按钮
-      sendInviteButton: '.send-invite, [class*="send"], [class*="发送"]',
+      sendInviteButton: 'button.weui-desktop-btn.weui-desktop-btn_primary',
       // 确认发送窗口
-      confirmDialog: '.confirm-dialog, [class*="dialog"], [class*="窗口"]',
+      confirmDialog: 'button.weui-desktop-btn.weui-desktop-btn_primary',
       // 下一页按钮
-      nextPageButton: '.next-page, [class*="next"], [class*="下一页"]',
+      nextPageButton: 'a.weui-desktop-btn.weui-desktop-btn_default.weui-desktop-btn_mini',
+    },
+
+    // 按钮文本匹配（用于区分相同class的按钮）
+    buttonTexts: {
+      inviteButton: '邀请带货',
+      addButton: '添加上次邀约商品',
+      confirmButton: '确认',
+      sendInviteButton: '发送邀约',
+      nextPageButton: '下一页',
     },
 
     // 达人数据存储文件

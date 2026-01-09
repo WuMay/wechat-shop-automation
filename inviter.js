@@ -67,6 +67,32 @@ export class TalentInviter {
     logger.info('浏览器启动成功');
   }
 
+  // 点击包含特定文本的按钮（辅助方法）
+  async clickButtonWithText(selector, text, options = {}) {
+    const { timeout = 10000 } = options;
+
+    try {
+      // 查找所有匹配选择器的按钮
+      const buttons = await this.page.$$(selector);
+
+      for (const button of buttons) {
+        const buttonText = await button.evaluate(el => el.textContent?.trim());
+
+        if (buttonText && buttonText.includes(text)) {
+          await button.click();
+          logger.info(`已点击按钮: "${buttonText}"`);
+          return true;
+        }
+      }
+
+      logger.warn(`未找到包含文本 "${text}" 的按钮`);
+      return false;
+    } catch (error) {
+      logger.error(`点击按钮失败: ${error.message}`);
+      return false;
+    }
+  }
+
   // 加载已邀约达人数据
   async loadInvitedTalents() {
     try {
@@ -230,17 +256,19 @@ export class TalentInviter {
   // 点击邀请带货按钮
   async clickInviteButton() {
     const selectors = this.config.business.selectors;
+    const buttonTexts = this.config.business.buttonTexts;
 
     try {
-      const exists = await elementExists(this.page, selectors.inviteButton);
-      if (!exists) {
-        logger.warn('未找到邀请带货按钮');
-        return false;
+      const success = await this.clickButtonWithText(
+        selectors.inviteButton,
+        buttonTexts.inviteButton
+      );
+
+      if (success) {
+        await randomDelay(2000, 3000);
       }
 
-      await humanLikeClick(this.page, selectors.inviteButton);
-      await randomDelay(2000, 3000);
-      return true;
+      return success;
     } catch (error) {
       logger.error(`点击邀请带货按钮失败: ${error.message}`);
       return false;
@@ -250,17 +278,19 @@ export class TalentInviter {
   // 点击添加上次邀约商品
   async clickAddProductButton() {
     const selectors = this.config.business.selectors;
+    const buttonTexts = this.config.business.buttonTexts;
 
     try {
-      const exists = await waitForElement(this.page, selectors.addProductButton, this.config.timeout.elementWait);
-      if (!exists) {
-        logger.warn('未找到添加商品按钮');
-        return false;
+      const success = await this.clickButtonWithText(
+        selectors.addProductButton,
+        buttonTexts.addButton
+      );
+
+      if (success) {
+        await randomDelay(1500, 2500);
       }
 
-      await humanLikeClick(this.page, selectors.addProductButton);
-      await randomDelay(1500, 2500);
-      return true;
+      return success;
     } catch (error) {
       logger.error(`点击添加商品按钮失败: ${error.message}`);
       return false;
@@ -270,17 +300,19 @@ export class TalentInviter {
   // 点击确认按钮
   async clickConfirmButton() {
     const selectors = this.config.business.selectors;
+    const buttonTexts = this.config.business.buttonTexts;
 
     try {
-      const exists = await waitForElement(this.page, selectors.confirmButton, this.config.timeout.elementWait);
-      if (!exists) {
-        logger.warn('未找到确认按钮');
-        return false;
+      const success = await this.clickButtonWithText(
+        selectors.confirmButton,
+        buttonTexts.confirmButton
+      );
+
+      if (success) {
+        await randomDelay(1500, 2500);
       }
 
-      await humanLikeClick(this.page, selectors.confirmButton);
-      await randomDelay(1500, 2500);
-      return true;
+      return success;
     } catch (error) {
       logger.error(`点击确认按钮失败: ${error.message}`);
       return false;
@@ -290,17 +322,19 @@ export class TalentInviter {
   // 点击发送邀约
   async clickSendInviteButton() {
     const selectors = this.config.business.selectors;
+    const buttonTexts = this.config.business.buttonTexts;
 
     try {
-      const exists = await waitForElement(this.page, selectors.sendInviteButton, this.config.timeout.elementWait);
-      if (!exists) {
-        logger.warn('未找到发送邀约按钮');
-        return false;
+      const success = await this.clickButtonWithText(
+        selectors.sendInviteButton,
+        buttonTexts.sendInviteButton
+      );
+
+      if (success) {
+        await randomDelay(1500, 2500);
       }
 
-      await humanLikeClick(this.page, selectors.sendInviteButton);
-      await randomDelay(1500, 2500);
-      return true;
+      return success;
     } catch (error) {
       logger.error(`点击发送邀约按钮失败: ${error.message}`);
       return false;
@@ -330,18 +364,22 @@ export class TalentInviter {
   // 处理分页
   async goToNextPage() {
     const selectors = this.config.business.selectors;
+    const buttonTexts = this.config.business.buttonTexts;
 
     try {
-      const exists = await elementExists(this.page, selectors.nextPageButton);
-      if (!exists) {
+      const success = await this.clickButtonWithText(
+        selectors.nextPageButton,
+        buttonTexts.nextPageButton
+      );
+
+      if (success) {
+        logger.info('已翻到下一页');
+        await randomDelay(3000, 5000);
+        return true;
+      } else {
         logger.info('没有下一页，处理完成');
         return false;
       }
-
-      await humanLikeClick(this.page, selectors.nextPageButton);
-      logger.info('已翻到下一页');
-      await randomDelay(3000, 5000);
-      return true;
     } catch (error) {
       logger.error(`翻页失败: ${error.message}`);
       return false;
